@@ -1,1 +1,0 @@
-<h1>THIS IS A FOOTER</h1>
