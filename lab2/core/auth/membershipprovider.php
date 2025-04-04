@@ -1,16 +1,19 @@
 <?php
 
-namespace auth;
+namespace core\auth;
 
 use models\User;
 
-require(dirname(dirname(__DIR__) . "\\Models\\" . "user.php"));
+require_once dirname(dirname(__DIR__)) . "/models/user.php";
 
 class MembershipProvider
 {
     private $user;
 
-    public function __construct() {}
+    public function __construct()
+    {
+        $this->user = new User();
+    }
 
     public function getUser()
     {
@@ -25,7 +28,9 @@ class MembershipProvider
     public function initUserByUsername($username)
     {
         $this->user->setUsername($username);
-        $this->user = $this->user->readByUsername();
+        $users = $this->user->readByUsername();
+        if(isset($users))
+            $this->user = $users[0];
     }
 
     public function login($username, $password)
@@ -33,10 +38,12 @@ class MembershipProvider
         $this->initUserByUsername($username);
 
         //validate pw
-        if (password_verify($password, $this->user->password)) {
+        if (password_verify($password, $this->user->getPassword())) {
 
             session_start();
-            $_SESSION['username'] = $this->user->username;
-        }
+            $_SESSION['username'] = $this->user->getUsername();
+            return true;
+        } else
+            return false;
     }
 }

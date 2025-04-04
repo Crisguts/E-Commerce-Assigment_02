@@ -98,7 +98,7 @@ class User
 
 
 //test
-$user = new User();
-$user->setUsername('user1');
+// $user = new User();
+// $user->setUsername('user1');
 
-var_dump($user->readByUsername());
+// var_dump($user->readByUsername());

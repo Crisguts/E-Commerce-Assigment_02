@@ -8,26 +8,28 @@ class App
 
     public function start()
     {
+
+        //HAVE TO COMMENT THIS OUT SO IT DOESNT CONFLICT THE SWITCH CASE BELOW: CHECK EMPLOYEE VIEW OR CONTROLLER IDK ANYMORE
         //FROM THE FORM
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        // if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
-            require(__DIR__ . '/Models/employee.php');
+        //     require(__DIR__ . '/Models/employee.php');
 
-            if (isset($_POST)) {
-                echo $_POST['fname'] . "-" . $_POST['lname'] . "-" . $_POST['title'] . "-" . $_POST['empId'] . "-" . $_POST['depId'];
-                $employee = new Employee();
-                $employee->setEmpID($_POST['empId']);
-                $employee->setFirstName((string) $_POST['fname']);
-                $employee->setLastName((string)$_POST['lname']);
-                $employee->setTitle((string)$_POST['title']);
-                $employee->setDepID((int) $_POST['depId']);
-                $employee->create();
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit();
-            }
-        } else {
-            // echo "Request method is " . $_SERVER['REQUEST_METHOD'];
-        }
+        //     if (isset($_POST)) {
+        //         echo $_POST['fname'] . "-" . $_POST['lname'] . "-" . $_POST['title'] . "-" . $_POST['empId'] . "-" . $_POST['depId'];
+        //         $employee = new Employee();
+        //         $employee->setEmpID($_POST['empId']);
+        //         $employee->setFirstName((string) $_POST['fname']);
+        //         $employee->setLastName((string)$_POST['lname']);
+        //         $employee->setTitle((string)$_POST['title']);
+        //         $employee->setDepID((int) $_POST['depId']);
+        //         $employee->create();
+        //         header("Location: " . $_SERVER['PHP_SELF']);
+        //         exit();
+        //     }
+        // } else {
+        //     // echo "Request method is " . $_SERVER['REQUEST_METHOD'];
+        // }
 
 
         //echo dirname(__DIR__);///Applications/XAMPP/xamppfiles/htdocs
@@ -46,7 +48,7 @@ class App
 
             $request = $requestBuilder->getRequest();
 
-            echo "method = " . $request->getMethod();
+            //echo "method = " . $request->getMethod();
 
 
             //if the url is "http://localhost:8080/labmvc/index.php?employee=1"
@@ -79,7 +81,27 @@ class App
             if (class_exists($controllerClass, true)) {
                 //if the controller's class exist, call it's function to satisfy the request
                 $controller = new $controllerClass();
-                $controller->read();
+
+                $requestMethod = $request->getMethod();
+                switch ($requestMethod) {
+                    case 'GET':
+                        $data = $controller->read();
+                        break;
+                    case 'POST':
+                        echo "balls";
+                        $data = $request->getPostFields();
+                        $controller->create($data);
+                        break;
+                    case 'PUT':
+
+                        break;
+                    case 'DELETE':
+
+                        break;
+                    default:
+                        $requestMethod = $_SERVER["REQUEST_METHOD"];
+                }
+
 
                 //echo "The request method is: " . $_SERVER["REQUEST_METHOD"];
             } else {

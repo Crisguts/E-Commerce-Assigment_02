@@ -23,8 +23,8 @@ class RequestBuilder
     private function getRequestMethod()
     {
         $requestMethod = "";
-        if (isset($this->getURLParams()[1]))
-            $requestMethod = $this->getURLParams()[1];
+        if (isset($this->getURLParams()[0]))
+            $requestMethod = $this->getURLParams()[0];
 
 
         switch ($requestMethod) {
