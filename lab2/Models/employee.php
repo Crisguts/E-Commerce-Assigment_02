@@ -24,7 +24,8 @@ class Employee
     }
     public function setFirstName($fname)
     {
-        $this->fname = $fname;
+
+        $this->fname = $this->validateInput($fname);
     }
 
     public function getLastName()
@@ -33,7 +34,7 @@ class Employee
     }
     public function setLastName($lname)
     {
-        $this->lname = $lname;
+        $this->lname = $this->validateInput($lname);
     }
 
     public function getEmpID()
@@ -42,17 +43,18 @@ class Employee
     }
     public function setEmpID($empID)
     {
-        $this->emp_id = $empID;
+        $this->emp_id = $this->validateInput($empID);
     }
 
     public function getDepID()
     {
         return $this->dep_id;
     }
+
     //public function setDepID(Department $depID) //teacher has it like this in his code
     public function setDepID($depID)
     {
-        $this->dep_id = $depID;
+        $this->dep_id = $this->validateInput($depID);
     }
 
     public function getTitle()
@@ -61,7 +63,12 @@ class Employee
     }
     public function setTitle($title)
     {
-        $this->title = $title;
+        $title = $this->validateInput($title);
+        if ($this->titleValidation($title)) {
+            $this->title = $title;
+        } else {
+            echo "Invalid Title.";
+        }
     }
 
     public function __construct()
@@ -111,7 +118,7 @@ class Employee
         //$query = "SELECT * FROM EMPLOYEES WHERE EMPLOYEEID = {$this->emp_id}";
         $query = "SELECT * FROM EMPLOYEES WHERE EMPLOYEEID = :employeeID";
         $stmt = $this->dbConnection->prepare($query);
-        $stmt->bindParam("employeeID", $this->getEmpID());
+        $stmt->bindParam(":employeeID", $this->getEmpID());
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_CLASS, Employee::class);
     }
@@ -120,14 +127,18 @@ class Employee
     //this function can accept depID as null,but rest must be given AND of the good data type
     public function update($empID, ?int $depID, $fname, $lname, $title)
     {
-        $query = "UPDATE EMPLOYEES SET firstName = :fname,lastName = :lname,title = :title,departmentID = :depID  WHERE EMPLOYEEID = :empID";
-        $stmt = $this->dbConnection->prepare($query);
-        $stmt->bindParam("fname", $fname, \PDO::PARAM_STR);
-        $stmt->bindParam("lname", $lname, \PDO::PARAM_STR);
-        $stmt->bindParam("title", $title, \PDO::PARAM_STR);
-        $stmt->bindParam("empID", $empID, \PDO::PARAM_INT);
-        $stmt->bindValue(":depID", $depID, $depID !== null ? \PDO::PARAM_INT : \PDO::PARAM_NULL);
-        $stmt->execute();
+        if ($this->titleValidation($title)) {
+            $query = "UPDATE EMPLOYEES SET firstName = :fname,lastName = :lname,title = :title,departmentID = :depID  WHERE EMPLOYEEID = :empID";
+            $stmt = $this->dbConnection->prepare($query);
+            $stmt->bindParam(":fname", $this->validateInput($fname), \PDO::PARAM_STR);
+            $stmt->bindParam(":lname", $this->validateInput($lname), \PDO::PARAM_STR);
+            $stmt->bindParam(":title", $this->validateInput($title), \PDO::PARAM_STR);
+            $stmt->bindParam(":empID", $this->validateInput($empID), \PDO::PARAM_INT);
+            $stmt->bindValue(":depID", $this->validateInput($depID), $this->validateInput($depID) !== null ? \PDO::PARAM_INT : \PDO::PARAM_NULL);
+            $stmt->execute();
+        } else {
+            echo "Title is not valid.";
+        }
     }
 
     //DELETE
@@ -137,6 +148,28 @@ class Employee
         $stmt = $this->dbConnection->prepare($query);
         $stmt->bindParam("employeeID", $this->emp_id);
         $stmt->execute();
+    }
+
+
+
+    //ASSIGNMENT 2 -  
+    //Ensure all employee records have the title only containing alphabetical characters.
+    public function titleValidation($title)
+    {
+        //return ctype_alpha($title); //assuming title has no space
+        return preg_match('^[a-zA-Z\s]+$', $title); //better because it accepts spaces in title
+    }
+
+    // Function to validate user input
+    function validateInput($data)
+    {
+        // Trim whitespace from the beginning and end of the input
+        $data = trim($data);
+        // Remove backslashes from the input
+        $data = stripslashes($data);
+        // Convert special characters to HTML entities
+        $data = htmlspecialchars($data);
+        return $data;
     }
 }
 
