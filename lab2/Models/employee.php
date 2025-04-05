@@ -79,9 +79,20 @@ class Employee
     //Implement the CRUD options 
 
     //CREATE
-    //create using this employee's 
+    //create using this employee's
+    // ensure that 
     public function create()
     {
+        $emptyRequiredFields = $this->validateEmployeeRecords();
+
+        // Ensure all employee records contain the necessary details: first name, departmentID, and title. - Florence 
+        if(!empty($emptyRequiredFields)){
+            foreach ($emptyRequiredFields as  $emptyField){
+                 echo $emptyField. "<br>"; 
+            }
+            return;
+        }
+
         $query = "SELECT COUNT(*) FROM EMPLOYEES WHERE EMPLOYEEID = :employeeID";
         $stmt = $this->dbConnection->prepare($query);
         $stmt->bindParam("employeeID", $this->getEmpID());
@@ -153,12 +164,33 @@ class Employee
 
 
     //ASSIGNMENT 2 -  
-    //Ensure all employee records have the title only containing alphabetical characters.
+    //Ensure all employee records have the title only containing alphabetical characters. - Cristian
     public function titleValidation($title)
     {
         //return ctype_alpha($title); //assuming title has no space
         return preg_match('^[a-zA-Z\s]+$', $title); //better because it accepts spaces in title
     }
+
+    // Ensure all employee records contain the necessary details: first name, departmentID, and title. - Florence
+    // (also ensure that if all or more than one of the latter fields are missing, print all the required fields)
+    public function validateEmployeeRecords(){
+        $emptyFields = [];
+        if(empty($this->fname)){
+            $emptyFields = "First name is required";
+        }
+        
+        if (empty($this->dep_id)){
+            $emptyFields = "Department ID is required";
+        } 
+        
+        if(empty($this->title)){            
+            $emptyFields = "Title is required";
+        }
+
+        return $emptyFields;
+    }
+
+    
 
     // Function to validate user input
     function validateInput($data)
