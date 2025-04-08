@@ -88,7 +88,6 @@ class App
                         $data = $controller->read();
                         break;
                     case 'POST':
-                        echo "balls";
                         $data = $request->getPostFields();
                         $controller->create($data);
                         break;

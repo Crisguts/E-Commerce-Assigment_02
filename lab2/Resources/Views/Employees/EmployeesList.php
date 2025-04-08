@@ -33,8 +33,16 @@ class EmployeeList
             $html .= "</tr>";
         }
 
-        $html .= "</table>";
+        $html .= "</table>" .
+            //button to logout , goes to other file that runs and deletes cookies
+            // "<form action='' method='GET'>" .
+            // "<input style='background: #3498db; color: white; font-size: 16px;' type='submit' value='Logout' onclick="
+            // . "location='/lab2/logouts'" . "/> " .
+            // '</form>';
 
+            "<input style='background: #3498db; color: white; font-size: 16px;' 
+            type='button' value='Logout' 
+            onclick=\"location='/lab2/logouts'\" />";
 
         //return $html;
         echo $html;

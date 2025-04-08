@@ -56,7 +56,6 @@ class Login
                     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
                     text-align: center;
                 }
-        
                 label {
                     font-size: 16px;
                     font-weight: bold;
